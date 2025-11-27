@@ -1,0 +1,87 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+|  \\    /   O peration     | Version:  v2412
+|   \\  /    A nd           |
+|    \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     rhoPimpleFoam;
+
+// -------------------------------------------------------------------------
+// START / STOP
+// -------------------------------------------------------------------------
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+endTime         8;           // physical / non-dim time; keep as you chose
+
+// -------------------------------------------------------------------------
+// TIME STEPPING (VERY CONSERVATIVE)
+// -------------------------------------------------------------------------
+// tiny initial step so first few iterations are extremely stable
+deltaT          1e-6;
+
+// let solver grow dt, but cap by Co and maxDeltaT
+adjustTimeStep  yes;
+maxCo           0.2;           // low CFL for compressible
+maxAlphaCo      0.2;
+maxDeltaT       2e-4;          // hard upper cap on dt
+
+// -------------------------------------------------------------------------
+// OUTPUT
+// -------------------------------------------------------------------------
+writeControl    timeStep;
+writeInterval   500;           // write every 500 steps (keeps disk usage sane)
+purgeWrite      0;
+
+writeFormat     ascii;
+writePrecision  10;
+writeCompression off;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable true;
+
+// ======================================================================
+// FUNCTION OBJECTS
+// ======================================================================
+functions
+{
+    forceCoeffs
+    {
+        type                forceCoeffs;
+        functionObjectLibs  ("libforces.so");
+
+        patches             (senPam);      // aerodynamic surface patch name
+
+        rho                 rho;           // compressible solver uses variable rho field
+        rhoInf              1.225;         // only used for normalization
+
+        magUInf             278;           // freestream velocity magnitude (m/s)
+
+        liftDir             (0 1 0);       // y-direction = lift (adjust if needed)
+        dragDir             (1 0 0);       // x-direction = drag
+        pitchAxis           (0 0 1);       // z-axis for pitching moment
+
+        lRef  0.1524;          // reference length = body diameter (m)
+        Aref  0.01824;         // reference area = π D^2 / 4 ≈ 0.01824 m^2
+
+        CofR (0 0 0);          // if x=0 is nose tip
+
+        outputControl       timeStep;
+        outputInterval      1;
+    }
+}
+
+// ************************************************************************* //

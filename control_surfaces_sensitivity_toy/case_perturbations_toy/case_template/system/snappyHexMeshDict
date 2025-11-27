@@ -1,0 +1,141 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+|  \\    /   O peration     | Version:  v2412
+|   \\  /    A nd           |
+|    \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+castellatedMesh true;
+snap            true;
+addLayers       false;
+
+// ==========================================================================
+// GEOMETRY
+// ==========================================================================
+geometry
+{
+    baseline.stl
+    {
+        type triSurfaceMesh;
+        name senPam;
+    }
+}
+
+// ==========================================================================
+// CASTELLATED MESH CONTROLS  (FASTER / COARSER)
+// ==========================================================================
+castellatedMeshControls
+{
+    // Less aggressive refinement → fewer cells, faster
+    maxLocalCells         5e5;
+    maxGlobalCells        5e6;
+    minRefinementCells    10;
+    nCellsBetweenLevels   3;
+
+    // Feature edges: moderate refinement
+    features
+    (
+        {
+            file "baseline.eMesh";
+            level 2;        // was 4 (very fine)
+        }
+    );
+
+    allowFreeStandingZoneFaces true;
+
+    // Surface refinement: moderate
+    refinementSurfaces
+    {
+        senPam
+        {
+            // (far-field level, near-surface level)
+            level (2 3);    // was (4 5) — MUCH cheaper
+            patchInfo
+            {
+                type wall;
+            }
+        }
+    }
+
+    // Remove expensive refinement regions for speed
+    refinementRegions
+    {
+        // none
+    }
+
+    resolveFeatureAngle    30;
+    locationInMesh         (0 0 10);
+}
+
+// ==========================================================================
+// SNAP CONTROLS (REDUCED COST)
+// ==========================================================================
+snapControls
+{
+    nSmoothPatch           5;
+    nSmoothInternal        2;
+    nSmoothSurfaceNormals  2;
+
+    tolerance              2.0;
+    nSolveIter             40;
+    nRelaxIter             4;
+
+    explicitFeatureSnap    true;
+    implicitFeatureSnap    false;
+
+    multiRegionFeatureSnap false;
+    snapTol                0.9;
+
+    detectNearSurfaces     snap;
+}
+
+// ==========================================================================
+// ADD LAYERS (DISABLED)
+// ==========================================================================
+addLayersControls
+{
+    relativeSizes          true;
+    expansionRatio         1.1;
+    finalLayerThickness    0.2;
+    minThickness           0.05;
+    nGrow                  0;
+    layers                 {};
+}
+
+// ==========================================================================
+// MESH QUALITY (KEPT REASONABLE)
+// ==========================================================================
+meshQualityControls
+{
+    maxNonOrtho            70;
+    maxBoundarySkewness    4;
+    maxInternalSkewness    4;
+    maxConcave             85;
+
+    minVol                 1e-15;
+    minTetQuality          1e-11;
+    minArea                1e-14;
+    minTwist               0.02;
+    minDeterminant         0.0005;
+    minFaceWeight          0.01;
+    minVolRatio            0.005;
+    minTriangleTwist       0.015;
+
+    nSmoothScale           4;
+    errorReduction         0.7;
+    relaxed                true;
+    nRelaxIter             4;
+}
+
+mergeTolerance 1e-8;
+
+// ************************************************************************* //

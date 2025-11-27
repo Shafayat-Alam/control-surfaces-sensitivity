@@ -1,0 +1,70 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+\*---------------------------------------------------------------------------*/
+
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+
+application     icoFoam;
+
+// ======================================
+// TIME CONTROL
+// ======================================
+startFrom       startTime;
+startTime       0;
+
+stopAt          endTime;
+endTime         10;               // Run 10 seconds of flow
+
+deltaT          2e-3;             // Starting dt
+adjustTimeStep  yes;              
+maxCo           5;                // Aggressive but fastest
+maxDeltaT       1e-2;             // dt may grow to 0.01 s
+
+// ======================================
+// OUTPUT CONTROL
+// ======================================
+writeControl    runTime;
+writeInterval   0.1;              // Output every 0.1 seconds
+
+writeFormat     ascii;
+writePrecision  8;
+
+timeFormat      general;
+timePrecision   6;
+
+runTimeModifiable  true;
+
+// ======================================
+// FORCE COEFFICIENTS FOR DRAG + MOMENTS
+// ======================================
+
+functions
+{
+    forceCoeffs
+    {
+        type                forceCoeffs;
+        functionObjectLibs  ("libforces.so");
+
+        // IMPORTANT: Update with your actual aerodynamic surface patches
+        patches             (senPam);     // <-- change if needed
+
+        rhoInf              1.225;       // Air density
+        magUInf             100;         // Freestream velocity
+        lRef  0.1524;          // reference length = body diameter (m)
+        Aref  0.01824;         // reference area = π D^2 / 4 ≈ 0.01824 m^2
+
+        CofR (0 0 0);          // if x=0 is nose tip
+
+        outputControl       timeStep;
+        outputInterval      1;
+    }
+}
+
+// ************************************************************************* //

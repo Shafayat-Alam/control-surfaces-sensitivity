@@ -1,0 +1,26 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+
+// Limit temperature to keep it physical
+limitTemperature
+{
+    type    limitTemperature;
+    active  yes;
+
+    limitTemperatureCoeffs
+    {
+        selectionMode   all;
+        min             250;    // K  (≈ room temp - 50 K margin)
+        max             1500;   // K  (way above what you’ll see here)
+        maxDeltaT       0.1;    // clamp changes per step
+    }
+}

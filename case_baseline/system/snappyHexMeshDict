@@ -24,6 +24,7 @@ geometry
     {
         type triSurfaceMesh;
         name senPam;
+        scale 0.0254;   // inches → meters
     }
 }
 
@@ -37,6 +38,7 @@ castellatedMeshControls
     maxGlobalCells        2e7;
     minRefinementCells    20;
     nCellsBetweenLevels   2;
+    locationInMesh (0 0 0.5);
 
     // sharp feature capture
     features
@@ -81,7 +83,6 @@ castellatedMeshControls
     }
 
     resolveFeatureAngle    25;
-    locationInMesh         (0 0 10);
 }
 
 // ==========================================================================

@@ -13,10 +13,10 @@ mkdir -p "$LOGDIR"
 echo "🧩 Decomposing domain..."
 decomposePar > "$LOGDIR/decomposePar_solve.log" 2>&1
 
-echo "🚀 Running rhoPimpleFoam..."
+echo "🚀 Running rhoSimpleFoam..."
 export OMPI_MCA_btl=^openib
-mpirun -np "$NPROCS" rhoPimpleFoam -parallel \
-    > "$LOGDIR/rhoPimpleFoam.log" 2>&1
+mpirun -np "$NPROCS" rhoSimpleFoam -parallel \
+    > "$LOGDIR/rhoSimpleFoam.log" 2>&1
 
 echo "🔗 Reconstructing..."
 reconstructPar > "$LOGDIR/reconstructPar.log" 2>&1

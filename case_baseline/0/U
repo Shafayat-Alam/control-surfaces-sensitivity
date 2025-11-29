@@ -1,11 +1,10 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-|  \\    /   O peration     | Version:  v2412
-|   \\  /    A nd           |
-|    \\/     M anipulation  |
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-
 FoamFile
 {
     version     2.0;
@@ -13,18 +12,18 @@ FoamFile
     class       volVectorField;
     object      U;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 dimensions      [0 1 -1 0 0 0 0];
 
-// Free-stream internal field
-internalField uniform (0 0 0);
+internalField   uniform (0 0 0);
 
 boundaryField
 {
     inlet
     {
         type fixedValue;
-        value uniform (278 0 0);
+        value uniform (238 0 0);
     }
 
     outlet
@@ -32,16 +31,16 @@ boundaryField
         type zeroGradient;
     }
 
-
     walls
     {
-        type    slip;        // use slip to mimic inviscid external aero domain walls
+        type slip;
     }
 
-    senPam      // <-- fin surface created by snappy
+    senPam
     {
-        type    noSlip;      // fin is solid
+        type noSlip;
     }
 }
+
 
 // ************************************************************************* //

@@ -1,10 +1,11 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2412                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
-|    \\/     M anipulation  |                                                 |
+| =========                 |
+| \\      /  F ield         | OpenFOAM
+|  \\    /   O peration     |
+|   \\  /    A nd           |
+|    \\/     M anipulation  |
 \*---------------------------------------------------------------------------*/
+
 FoamFile
 {
     version     2.0;
@@ -15,33 +16,35 @@ FoamFile
 
 thermoType
 {
-    type            hePsiThermo;
+    type            heRhoThermo;
     mixture         pureMixture;
-    transport       const;
+    transport       const;          // <-- CHANGED from sutherland
     thermo          hConst;
     equationOfState perfectGas;
     specie          specie;
-    energy          sensibleEnthalpy;   // ✅ THIS IS WHAT WE WANT
+    energy          sensibleEnthalpy;
 }
 
 mixture
 {
     specie
     {
-        molWeight       28.96;            // kg/kmol (air)
+        nMoles      1;
+        molWeight   28.97;      // air
     }
 
     thermodynamics
     {
-        Cp              1004.5;           // J/(kg K)
-        Hf              0;                // reference enthalpy (safe)
+        Cp          1005;       // J/(kg·K)
+        Hf          0;
     }
 
     transport
     {
-        mu              1.8e-5;           // dynamic viscosity (Pa·s) — REQUIRED for no-slip
-        Pr              0.72;             // Prandtl number for air
+        mu          1.8e-5;     // Pa·s (dynamic viscosity of air)
+        Pr          0.7;        // Prandtl number
     }
 }
+
 
 // ************************************************************************* //

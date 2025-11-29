@@ -1,9 +1,6 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |                                                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2412                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
-|    \\/     M anipulation  |                                                 |
+| =========                 |
+| OpenFOAM: The Open Source CFD Toolbox
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
@@ -15,57 +12,54 @@ FoamFile
 
 solvers
 {
-    // Pressure & density
-    "(p|rho)"
+    p
     {
         solver          GAMG;
-        tolerance       1e-7;
-        relTol          0.01;
-        smoother        DICGaussSeidel;
-        nPreSweeps      0;
-        nPostSweeps     2;
-        nFinestSweeps   2;
+        smoother        GaussSeidel;
+        tolerance       1e-6;
+        relTol          0.01;      // was 0.1 → a bit tighter
     }
 
-    "(p|rho)Final"
-    {
-        $p;
-        relTol          0;
-    }
-
-    // Velocity & ENTHALPY (h)
-    "(U|h|k|nuTilda)"
+    "(U|h)"
     {
         solver          smoothSolver;
         smoother        symGaussSeidel;
-        tolerance       1e-7;
-        relTol          0.01;
-    }
-
-    "(U|h|k|nuTilda)Final"
-    {
-        $U;
-        relTol          0;
+        tolerance       1e-6;
+        relTol          0.1;
     }
 }
 
-PIMPLE
+SIMPLE
 {
-    momentumPredictor       yes;
-    nOuterCorrectors        2;
-    nCorrectors             2;
     nNonOrthogonalCorrectors 0;
 
-    pMinFactor              0.5;
-    pMaxFactor              2.0;
+    pMinFactor      0.1;
+    pMaxFactor      1.5;
+
+    transonic       no;
+    consistent      no;
+
+    residualControl
+    {
+        p               1e-4;
+        U               1e-4;
+        h               1e-3;
+    }
 }
 
 relaxationFactors
 {
+    fields
+    {
+        p               0.2;   // was 0.3
+    }
     equations
     {
-        ".*" 1;
+        U               0.5;   // was 0.7
+        h               0.5;   // was 0.7
     }
 }
+
+
 
 // ************************************************************************* //

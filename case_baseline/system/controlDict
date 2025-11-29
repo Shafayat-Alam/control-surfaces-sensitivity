@@ -1,11 +1,10 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 |
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-|  \\    /   O peration     | Version:  v2412
-|   \\  /    A nd           |
-|    \\/     M anipulation  |
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2412                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-
 FoamFile
 {
     version     2.0;
@@ -13,75 +12,85 @@ FoamFile
     class       dictionary;
     object      controlDict;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     rhoPimpleFoam;
+application     rhoSimpleFoam;
 
-// -------------------------------------------------------------------------
-// START / STOP
-// -------------------------------------------------------------------------
 startFrom       startTime;
+
 startTime       0;
 
 stopAt          endTime;
-endTime         8;           // physical / non-dim time; keep as you chose
 
-// -------------------------------------------------------------------------
-// TIME STEPPING (VERY CONSERVATIVE)
-// -------------------------------------------------------------------------
-// tiny initial step so first few iterations are extremely stable
-deltaT          1e-6;
+endTime         5;
 
-// let solver grow dt, but cap by Co and maxDeltaT
-adjustTimeStep  yes;
-maxCo           0.2;           // low CFL for compressible
-maxAlphaCo      0.2;
-maxDeltaT       2e-4;          // hard upper cap on dt
+deltaT          4e-2;      // was 1e-4 before
 
-// -------------------------------------------------------------------------
-// OUTPUT
-// -------------------------------------------------------------------------
+maxDeltaT       4e-1;  
+
 writeControl    timeStep;
-writeInterval   500;           // write every 500 steps (keeps disk usage sane)
+
+writeInterval 1;
+
+adjustTimeStep  yes;
+
 purgeWrite      0;
 
-writeFormat     ascii;
-writePrecision  10;
+writeFormat     binary;
+
+writePrecision  6;
+
 writeCompression off;
 
 timeFormat      general;
+
+maxCo           0.5;
+
 timePrecision   6;
+
+graphFormat     raw;
 
 runTimeModifiable true;
 
-// ======================================================================
-// FUNCTION OBJECTS
-// ======================================================================
 functions
 {
+    forces
+    {
+        type    forces;
+        libs    ("libforces.so");
+
+        patches ("senPam");
+
+        rho     rho;
+        CofR    (0 0 0);
+    }
+
     forceCoeffs
     {
-        type                forceCoeffs;
-        functionObjectLibs  ("libforces.so");
+        type            forceCoeffs;
+        libs            ("libforces.so");
 
-        patches             (senPam);      // aerodynamic surface patch name
+        patches         ("senPam");
 
-        rho                 rho;           // compressible solver uses variable rho field
-        rhoInf              1.225;         // only used for normalization
+        rho             rho;        // required in v2412
+        rhoInf          1.225;      // you asked for this — now valid
 
-        magUInf             278;           // freestream velocity magnitude (m/s)
+        dragDir    (1 0 0);
+        liftDir    (0 1 0);
+        pitchAxis  (0 1 0);
 
-        liftDir             (0 1 0);       // y-direction = lift (adjust if needed)
-        dragDir             (1 0 0);       // x-direction = drag
-        pitchAxis           (0 0 1);       // z-axis for pitching moment
 
-        lRef  0.1524;          // reference length = body diameter (m)
-        Aref  0.01824;         // reference area = π D^2 / 4 ≈ 0.01824 m^2
+        CofR            (0 0 0);
 
-        CofR (0 0 0);          // if x=0 is nose tip
+        magUInf 238;
+        Aref   0.01824;     // frontal area, m^2
+        lRef   2.4384;      // rocket length, m
 
-        outputControl       timeStep;
-        outputInterval      1;
     }
+
 }
+
+
+
 
 // ************************************************************************* //

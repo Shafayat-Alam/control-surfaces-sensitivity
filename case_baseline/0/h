@@ -1,46 +1,43 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  v2412                                 |
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
-|    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
 FoamFile
 {
     version     2.0;
     format      ascii;
     class       volScalarField;
-    object      T;
+    object      h;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 0 0 1 0 0 0];
+dimensions      [0 2 -2 0 0 0 0];
 
-internalField   uniform 300;
+// Cp * 300 K  ≈ 3.0e5 J/kg
+internalField   uniform 3.0e5;
 
 boundaryField
 {
     inlet
     {
-        type    fixedValue;
-        value   uniform 300;
+        type        fixedValue;
+        value       uniform 3.0e5;   // 300 K at inlet
     }
 
     outlet
     {
-        type    zeroGradient;
+        type        zeroGradient;
     }
 
     walls
     {
-        type    zeroGradient;
+        type        zeroGradient;
     }
 
     senPam
     {
-        type    zeroGradient;         // adiabatic solid surface
+        type        zeroGradient;
     }
 }
-
 
 // ************************************************************************* //

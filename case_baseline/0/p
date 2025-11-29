@@ -1,11 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
-| =========                 | 
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
-|  \\    /   O peration     | Version:  v2412
-|   \\  /    A nd           |
-|    \\/     M anipulation  |
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
 \*---------------------------------------------------------------------------*/
-
 FoamFile
 {
     version     2.0;
@@ -13,33 +9,33 @@ FoamFile
     class       volScalarField;
     object      p;
 }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 dimensions      [1 -1 -2 0 0 0 0];
 
-internalField uniform 101325;
+internalField   uniform 101325;   // Pa
 
 boundaryField
 {
     inlet
     {
-        type zeroGradient;   // because U is fixed
+        type        fixedValue;
+        value       uniform 101325;     // static pressure
     }
 
     outlet
     {
-        type fixedValue;
-        value uniform 101325;   // ambient static pressure
+        type        zeroGradient;
     }
-
 
     walls
     {
-        type            zeroGradient;     // slip walls → no normal gradient of p
+        type        zeroGradient;       // OK for slip walls
     }
 
     senPam
     {
-        type            zeroGradient;     // solid fin
+        type        zeroGradient;       // OK because U has noSlip here
     }
 }
 
